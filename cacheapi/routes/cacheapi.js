@@ -16,36 +16,7 @@ router.get('/action/get/:key', function (req, res, next) {
       console.log("Cache miss");
       return res.json([]);
     } else {
-      // check TTL, if expired don't use it
-
-      var ttl = docs[0].ttl;
-      var ttlInMS = 0;
-      if(ttl.substring(ttl.length-1,ttl.length) == "s"){
-          var ttlSec = parseInt(ttl.substring(0,ttl.length-1));
-          ttlInMS = ttlSec*1000;
-      }else  if(ttl.substring(ttl.length-1,ttl.length) == "m"){
-        var ttlMin = parseInt(ttl.substring(0,ttl.length-1));
-        ttlInMS = ttlMin*60*1000;
-      }else  if(ttl.substring(ttl.length-1,ttl.length) == "h"){
-        var ttlHr = parseInt(ttl.substring(0,ttl.length-1));
-        ttlInMS = ttlHr*60*60*1000;
-      }
-
-      // If within TTL update the ttl in the document
-      if(new Date().getTime() < docs[0].creationTime + ttlInMS){
-          // update the hit count 
-          docs[0].hitCount = docs[0].hitCount + 1;
-          docs[0].creationTime = new Date().getTime();
-          console.log(docs);
-          collection.update({ key: paramKey }, docs[0], function (e, docs) {
-
-          });
-          console.log("Cache hit");
-          res.json(docs[0]);
-      }else{
-        res.json([]);
-      }
-     
+      return res.json(docs[0]);
     }
    
   });
