@@ -11,6 +11,10 @@ router.get('/action/get/:key', function (req, res, next) {
   var db = req.db;
   var collection = db.get('cache');
   collection.find({ key: paramKey }, {}, function (e, docs) {
+    if(e){
+      res.statusMessage = "Could not find document"; 
+      res.status(400).end();
+    }
     res.statusCode = 200;
     if (docs.length == 0) {
       console.log("Cache miss");
@@ -38,7 +42,10 @@ router.get('/action/get/:key', function (req, res, next) {
           docs[0].creationTime = new Date().getTime();
           console.log(docs);
           collection.update({ key: paramKey }, docs[0], function (e, docs) {
-
+            if(e){
+              res.statusMessage = "Could not find document"; 
+              res.status(400).end();
+            }
           });
           console.log("Cache hit");
           res.json(docs[0]);
@@ -58,8 +65,11 @@ router.get('/action/getallkeys', function (req, res, next) {
   var db = req.db;
   var collection = db.get('cache');
   collection.find({}, {}, function (e, docs) {
+    if(e){
+      res.statusMessage = "Could not find document"; 
+      res.status(400).end();
+    }
     var keysArr = [];
-
     var doc;
     for (doc in docs) {
       if (docs[doc].key != null) {
@@ -81,6 +91,10 @@ router.post('/action/createupdatedata/:key', function (req, res, next) {
   // if key already exists
   // console.log(collection.find({},{sort:{hitcount:1}}).then((doc)=>{console.log(doc[0])}));
   collection.find({ key: paramKey }, {}, function (e, docs) {
+    if(e){
+      res.statusMessage = "Could not find document"; 
+      res.status(400).end();
+    }
     res.statusCode = 200;
     if (docs.length == 0) {
       // Check whether the number of entries is 5
@@ -96,7 +110,11 @@ router.post('/action/createupdatedata/:key', function (req, res, next) {
         }
       })
       collection.insert({ key: paramKey, value: payload, hitCount: 0 , ttl : '30s', creationTime: new Date().getTime() }).then(function () {
-        res.send("DONE");
+        if(e){
+          res.statusMessage = "Could not find document"; 
+          res.status(400).end();
+        }
+        res.status(200).end();
       });
     } else {
 
@@ -106,7 +124,7 @@ router.post('/action/createupdatedata/:key', function (req, res, next) {
       collection.remove({ key: paramKey }, {}).then(function () {
         var hitCount = docs.hitCount;
         collection.insert({ key: paramKey, value: payload, hitCount: hitCount, ttl : '30s', creationTime: new Date().getTime() }).then(function () {
-          res.send("DONE");
+          res.status(200).end();
         });
       });
     }
@@ -122,6 +140,10 @@ router.post('/action/removekey/:key', function (req, res, next) {
   var db = req.db;
   var collection = db.get('cache');
   collection.remove({ key: paramKey }, {}, function (e, docs) {
+    if(e){
+      res.statusMessage = "Could not find document"; 
+      res.status(400).end();
+    }
     res.json(docs);
   });
 
@@ -132,6 +154,10 @@ router.post('/action/removeallkeys', function (req, res, next) {
   var db = req.db;
   var collection = db.get('cache');
   collection.remove({}, {}, function (e, docs) {
+    if(e){
+      res.statusMessage = "Could not find document"; 
+      res.status(400).end();
+    }
     res.json(docs);
   });
 
