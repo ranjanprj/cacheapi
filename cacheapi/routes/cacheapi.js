@@ -135,7 +135,7 @@ router.post('/action/createupdatedata/:key', function (req, res, next) {
 
 
 // Remove specified keys from cache db
-router.post('/action/removekey/:key', function (req, res, next) {
+router.delete('/action/removekey/:key', function (req, res, next) {
   var paramKey = req.params.key;
   var db = req.db;
   var collection = db.get('cache');
@@ -150,7 +150,7 @@ router.post('/action/removekey/:key', function (req, res, next) {
 });
 
 // Remove all the keys from cache db
-router.post('/action/removeallkeys', function (req, res, next) {
+router.delete('/action/removeallkeys', function (req, res, next) {
   var db = req.db;
   var collection = db.get('cache');
   collection.remove({}, {}, function (e, docs) {
